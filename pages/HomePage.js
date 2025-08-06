@@ -1,70 +1,91 @@
-const { expect } = require('@playwright/test');
-
 class HomePage {
-    constructor(page) {
-        this.page = page;
-        this.pageTitle = page.locator('#nava');
-        this.carouselItems = page.locator('.carousel-item');
+  constructor(page) {
+    this.page = page;
+    
+    // Locators do Navbar (para autenticação, etc.)
+    this.signUpLink = page.locator('#signin2');
+    this.logInLink = page.locator('#login2');
+    this.welcomeMessage = page.locator('#nameofuser');
+    
+    // Locators para elementos do corpo da Home Page
+    this.pageTitle = page.locator('#nava');
+    this.carouselItems = page.locator('.carousel-item');
+    this.productList = page.locator('#tbodyid .card');
+  }
 
-    }
-
-    /**
-     * Navigates to the homepage.
-     */
-     async navigate() {
-        await this.page.goto('https://www.demoblaze.com/');
-    }
-
-    /**
-    * Clicks on a product link from the homepage grid.
-    * @param {string} productName The exact name of the product link to click.
-    */
-    async productName(productName) {
-        await this.page.getByRole('link', { name: productName }).click();
-    }
-
-
-    /**
-   * Clicks on a category link. If the category is 'All', it does nothing.
-   * @param {string} categoryName - The name of the category ('All', 'Phones', 'Laptops', 'Monitors').
-   * npx playwright test -g "Phones" - npx playwright test --grep "@sorting" - npx playwright test -g "category|sorting"
+  /**
+   * Navigates to the homepage.
    */
-    async selectCategory(categoryName) {
-        // O 'All' é o estado padrão, então não precisa clicar em nada.
-        if (categoryName.toLowerCase() === 'all') {
-            console.log('Verificando a categoria "All" (padrão), nenhum clique necessário.');
-            return; // A palavra 'return' aqui faz a função parar e sair.
-        }
-        // Para as outras categorias, nós clicamos no link.
-        console.log(`Clicando na categoria: ${categoryName}...`);
-        await this.page.getByRole('link', { name: categoryName }).click();
-    }
+  async navigate() {
+    await this.page.goto('https://www.demoblaze.com/');
+  }
 
-    /**
-     * Returns the number of slides found in the carousel.
-     * @returns {Promise<number>}
-     */
-    async getCarouselItemsCount() {
-        return this.carouselItems.count();
-    }
+  // --- MÉTODOS DE AUTENTICAÇÃO (do Navbar) ---
 
-    /**
-     * Extracts the 'src' attribute from the image of each carousel slide.
-     * @returns {Promise<string[]>} An array with the image source filenames.
-     */
-    async getCarouselImageSources() {
-        const sources = [];
-        for (const item of await this.carouselItems.all()) {
-            const image = item.locator('img');
-            const src = await image.getAttribute('src');
-            // Apenas adicionamos o nome do arquivo, e não o caminho completo
-            if (src) {
-                sources.push(src.split('/').pop());
-            }
-        }
-        return sources;
-    }
+  async openSignUpModal() {
+    await this.signUpLink.click();
+  }
 
+  async openLoginModal() {
+    await this.logInLink.click();
+  }
+
+  // --- MÉTODOS DE INTERAÇÃO COM PRODUTOS E CATEGORIAS ---
+
+  /**
+   * Clicks on a product link from the homepage grid by its exact name.
+   * @param {string} productName
+   */
+  async selectProduct(productName) {
+    await this.page.getByRole('link', { name: productName }).click();
+  }
+
+  /**
+   * Clicks on a category link by name.
+   * @param {string} categoryName
+   */
+  async selectCategory(categoryName) {
+    if (categoryName.toLowerCase() === 'all') {
+      await this.navigate();
+      return;
+    }
+    await this.page.getByRole('link', { name: categoryName }).click();
+  }
+
+  /**
+   * Returns the number of products currently visible on the page.
+   * @returns {Promise<number>}
+   */
+  async getProductCount() {
+    await this.productList.first().waitFor();
+    return this.productList.count();
+  }
+
+  // --- MÉTODOS DO CARROSSEL ---
+
+  /**
+   * Gets the count of carousel items.
+   * @returns {Promise<number>}
+   */
+  async getCarouselItemsCount() {
+    return this.carouselItems.count();
+  }
+
+  /**
+   * Gets the image sources from all carousel items.
+   * @returns {Promise<string[]>}
+   */
+  async getCarouselImageSources() {
+    const sources = [];
+    for (const item of await this.carouselItems.all()) {
+      const image = item.locator('img');
+      const src = await image.getAttribute('src');
+      if (src) {
+        sources.push(src.split('/').pop());
+      }
+    }
+    return sources;
+  }
 }
 
 module.exports = { HomePage };
