@@ -20,7 +20,7 @@ test.describe('Shopping Cart Functionality', () => {
     });
 
     await homePage.navigate();
-    await homePage.productName('Samsung galaxy s6');
+    await homePage.selectProduct('Samsung galaxy s6');
     await productPage.addToCart();
 
     console.log('--- Teste finalizado com sucesso ---');
