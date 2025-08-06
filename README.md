@@ -52,7 +52,7 @@ A suíte de testes cobre os seguintes fluxos e validações avançadas:
 
 1.  **Clone o repositório:**
     ```bash
-    git clone <URL_DO_SEU_REPOSITORIO_DEMOBLAZE>
+    git clone <https://github.com/GustvoZ/playwright-demoblaze.git>
     ```
 
 2.  **Navegue até a pasta do projeto:**
@@ -143,7 +143,7 @@ The test suite covers the following advanced flows and validations:
 
 1.  **Clone the repository:**
     ```bash
-    git clone <YOUR_DEMOBLAZE_REPOSITORY_URL>
+    git clone <https://github.com/GustvoZ/playwright-demoblaze.git>
     ```
 
 2.  **Navigate to the project directory:**
